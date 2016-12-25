@@ -1,9 +1,17 @@
-//var dataset = [...new Array(25).keys()].map(i=>Math.round(i*Math.random()*15+15));
-var dataset = [15, 21, 21, 45, 51, 37, 92, 65, 93, 55, 130, 144, 66, 162, 163, 239, 157, 164, 110, 65, 183, 147, 243, 121, 198]
+var dataset = [ 5, 10, 15, 20, 25 ];
+var w = 500;
+var h = 50;
 
-d3.select('body').selectAll('div')
+var svg = d3
+  .select('body')
+  .append('svg')
+  .attr('width', w)
+  .attr('height', h);
+
+svg.selectAll('circle')
   .data(dataset)
   .enter()
-  .append('div')
-  .attr('class', 'bar')
-  .style('height', d => d + 'px');
+  .append('circle')
+  .attr('cx', (d,i) => i*50 + 25)
+  .attr('cy', h/2)
+  .attr('r', d => d);
