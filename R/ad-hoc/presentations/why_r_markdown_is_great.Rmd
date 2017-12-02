@@ -1,0 +1,38 @@
+---
+title: "Why R Markdown is great"
+author: "ME"
+output: 
+  revealjs::revealjs_presentation:
+    theme: league
+  #html_document:
+    #toc: TRUE
+---
+
+# YAY
+
+## Let's explore what Rmarkdown can do:
+
+**R can do math expressions:**
+``` {r}
+print((2+2) * 3)
+```
+
+***
+``` {r}
+hist(mtcars$mpg)
+```
+
+# Nicer plots
+***
+
+A bit of R code below:
+``` {r}
+library(ggplot2)
+summary(cars)
+```
+
+***
+``` {r, fig.width=4, message=FALSE}
+qplot(speed, dist, data=cars) + 
+    geom_smooth()
+```

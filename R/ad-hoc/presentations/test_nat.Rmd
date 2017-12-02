@@ -1,0 +1,57 @@
+---
+title: "Natalies work ethic"
+author: "ME"
+output: 
+  revealjs::revealjs_presentation:
+    theme: league
+  #html_document:
+    #toc: TRUE
+---
+
+## To start with
+
+We see below, a simple graph of the amount of effort Nat puts in per day, to the amount of pay Nat will receive:
+
+***
+
+``` {r someGraph, echo=F, visible=F}
+library(data.table, quietly = T)
+library(ggplot2, quietly = T)
+library(cowplot, quietly = T, warn.conflict=F)
+library(scales, quietly = T)
+d <- data.table(work_amount=seq(8, 10, 0.02), amount_of_pay_per_year=(exp(seq(2, 6, 0.04)) + 50) * 1000)
+ggplot(d, aes(work_amount, amount_of_pay_per_year)) +
+  geom_line(color='red') +
+  scale_y_continuous(labels = dollar_format()) +
+  labs(x = 'Amount of work per day', y='Amount of pay per year in future')
+```
+
+## Bullet Points
+
+Lets test some bullet points:  
+
+- point 1
+- point 2
+- point 3
+
+## Incremental Bullet Points
+
+Lets test some bullet points:  
+
+> - point 1
+> - point 2
+> - point 3
+
+## But also...
+
+Now what does the amount of effort Nat puts in per day, look like compared to the amount of sleep Nat gets:
+
+``` {r anotherGraph, echo=F}
+library(data.table, quietly = T)
+library(ggplot2, quietly = T)
+library(cowplot, quietly = T, warn.conflict=F)
+d <- data.table(work_amount=seq(8, 10, 0.2), hours_of_sleep=seq(8, 6, -0.2))
+ggplot(d, aes(work_amount, hours_of_sleep)) +
+  geom_line(color='blue') +
+  labs(x = 'Amount of work per day', y='Hours of sleep per day')
+```
