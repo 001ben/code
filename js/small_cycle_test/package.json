@@ -4,6 +4,7 @@
   "private": true,
   "dependencies": {
     "@cycle/dom": "18.3.0",
+    "@cycle/http": "^14.8.0",
     "@cycle/run": "3.3.0",
     "awesome-typescript-loader": "3.2.3",
     "cycle-scripts": ">=2.0.0",
