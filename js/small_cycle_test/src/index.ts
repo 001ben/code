@@ -9,7 +9,7 @@ const main: Component = App;
 
 const drivers = {
   DOM: makeDOMDriver('#root'),
-  HTTP: makeHTTPDriver(),
+  // HTTP: makeHTTPDriver(),
 };
 
 run(main, drivers);

@@ -1,47 +1,85 @@
+// Imports ====
+import {DOMSource, VNode} from '@cycle/dom';
 import xs from 'xstream';
+import {Stream} from 'xstream';
 import {ISinks, ISources} from './interfaces';
+// ===
 
+// "Main" function ====
 export function App(sources: ISources): ISinks {
+  return { DOM: view(model(intent(sources.DOM))) };
+}
+// ===
 
-  const githubUsersRequest$ = sources.DOM.select('.get-random-user').events('click')
-    .startWith(new Event('dummy click'))
-    .map((ev) => {
-      const randomOffset = Math.floor(Math.random() * 500);
-      return {
-        category: 'users',
-        method: 'GET',
-        url: `https://api.github.com/users?since=${randomOffset}`,
-      };
-    });
+// Interfaces ====
+interface IActions {
+  changeHeight$: Stream<number>;
+  changeWeight$: Stream<number>;
+}
 
-  const githubUsersResponse$ = sources.HTTP.select('users')
-    .flatten()
-    .map((res) => res.body);
+interface IState {
+  bmi: number;
+  height: number;
+  weight: number;
+}
+// ===
 
-  const close1Stream = sources.DOM.select('.close1').events('click')
-    .startWith(new Event('starting close click'));
-  const suggestion1$ = xs.combine(close1Stream, githubUsersResponse$)
-    .map(([closeClick, users]) => users[Math.floor(Math.random() * users.length)]);
-  const suggestion1WithNulls$ = xs.merge(suggestion1$, githubUsersRequest$.mapTo(null))
-    .startWith(null);
-
-  const vdom$ = suggestion1WithNulls$
-    .map((user: any) =>
-      <div className='github-user'>
-      <button className='get-random-user'>Get Random User</button>
-        {user === null ? null :
-          <div className='user-details'>
-            <button className='close1'>X</button>
-            <h1 className='user-name'>{user.login}</h1>
-            <img src={user.avatar_url} />
-            <a className='user-github' href={user.html_url}>{user.html_url}</a>
-          </div>
-        }
-      </div>,
-  );
-
+// User actions mapping functions ====
+function intent(domSource: DOMSource): IActions {
   return {
-    DOM: vdom$,
-    HTTP: githubUsersRequest$,
+    changeHeight$: domSource.select('.height').events('input')
+      .map((ev) => (ev.target as HTMLInputElement).value)
+      .map((val) => parseInt(val, 10)),
+    changeWeight$: domSource.select('.weight').events('input')
+      .map((ev) => (ev.target as HTMLInputElement).value)
+      .map((val) => parseInt(val, 10)),
   };
 }
+// ===
+
+// Model state tracking and helper ====
+function model(actions: IActions): Stream<IState> {
+  const weight$ = actions.changeWeight$.startWith(70);
+  const height$ = actions.changeHeight$.startWith(170);
+  return xs.combine(weight$, height$)
+    .map(([weight, height]: [number, number]) => {
+      const bmi = calculateBMI(weight, height);
+      return {weight, height, bmi};
+    });
+}
+
+function calculateBMI(weight: number, height: number): number {
+  const heightMeters = height * 0.01;
+  return Math.round(weight / (heightMeters ** 2));
+}
+// ===
+
+// View function and helpers ====
+function view(state$: Stream<IState>) {
+  return state$.map(({weight, height, bmi}: {weight: number, height: number, bmi: number}) =>
+    <div>
+      {renderWeightSlider(weight)}
+      {renderHeightSlider(height)}
+      <h2>BMI is {bmi}</h2>
+    </div>,
+  );
+}
+
+function renderWeightSlider(weight: number): VNode {
+  return (
+    <div>
+      Weight {weight} kg
+      <input className='weight' type='range' min='40' max='140' value={weight} />
+    </div>
+  );
+}
+
+function renderHeightSlider(height: number): VNode {
+  return (
+    <div>
+      Height {height} cm
+      <input className='height' type='range' min='140' max='210' value={height} />
+    </div>
+  );
+}
+// ===

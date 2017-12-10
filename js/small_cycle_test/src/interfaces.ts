@@ -5,12 +5,12 @@ import {Stream} from 'xstream';
 
 export interface ISources {
   DOM: DOMSource;
-  HTTP: HTTPSource;
+  // HTTP: HTTPSource;
 }
 
 export interface ISinks {
   DOM: Stream<VNode>;
-  HTTP: Stream<RequestInput>;
+  // HTTP: Stream<RequestInput>;
 }
 
 export type Component = (s: ISources) => ISinks;
