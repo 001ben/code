@@ -20,6 +20,10 @@
     superagent "3.7.0"
     xstream "*"
 
+"@cycle/isolate@^3.2.0":
+  version "3.2.0"
+  resolved "https://registry.yarnpkg.com/@cycle/isolate/-/isolate-3.2.0.tgz#8ffddb9b05cb9a4fbcf812794c0e5285af341051"
+
 "@cycle/run@*":
   version "4.0.0"
   resolved "https://registry.yarnpkg.com/@cycle/run/-/run-4.0.0.tgz#d48c5133cd783afdf7f9e37ce1c158b570d6c5f1"
@@ -29,12 +33,6 @@
 "@cycle/run@3.3.0":
   version "3.3.0"
   resolved "https://registry.yarnpkg.com/@cycle/run/-/run-3.3.0.tgz#a00dd638e0e9349fcf0d7b7628f9f37309559b9f"
-  dependencies:
-    xstream "10.x || 11.x"
-
-"@cycle/run@3.4":
-  version "3.4.0"
-  resolved "https://registry.yarnpkg.com/@cycle/run/-/run-3.4.0.tgz#113844add669ace91d245842522f3733ba5bd393"
   dependencies:
     xstream "10.x || 11.x"
 
@@ -5550,7 +5548,7 @@ xml-name-validator@^2.0.1:
   version "2.0.1"
   resolved "https://registry.yarnpkg.com/xml-name-validator/-/xml-name-validator-2.0.1.tgz#4d8b8f1eccd3419aa362061becef515e1e559635"
 
-"xstream@10.x || 11.x", xstream@11.0.0, xstream@11.x.x:
+xstream@*, "xstream@10.x || 11.x", xstream@11.0.0:
   version "11.0.0"
   resolved "https://registry.yarnpkg.com/xstream/-/xstream-11.0.0.tgz#2018c3c4e573f76b62b9cf96a17a46876ab120e0"
   dependencies:

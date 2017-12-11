@@ -1,13 +1,89 @@
 // Imports ====
 import {DOMSource, VNode} from '@cycle/dom';
+import isolate from '@cycle/isolate';
 import xs from 'xstream';
 import {Stream} from 'xstream';
-import {ISinks, ISources} from './interfaces';
+import {ISinks, ISliderSinks, ISliderSources, ISources} from './interfaces';
 // ===
 
-// "Main" function ====
+// App function ====
 export function App(sources: ISources): ISinks {
-  return { DOM: view(model(intent(sources.DOM))) };
+  // return { DOM: view(model(intent(sources.DOM))) };
+  const weightProps$ = xs.of({
+    label: 'Weight', max: 150, min: 40, unit: 'kg', value: 70,
+  });
+  const heightProps$ = xs.of({
+    label: 'Height', max: 210, min: 140, unit: 'cm', value: 170,
+  });
+
+  const weightSources = {DOM: sources.DOM, props: weightProps$};
+  const heightSources = {DOM: sources.DOM, props: heightProps$};
+
+  const weightSlider = isolate(LabeledSlider)(weightSources);
+  const heightSlider = isolate(LabeledSlider)(heightSources);
+
+  const actions$: IActions = {
+    changeHeight$: heightSlider.value,
+    changeWeight$: weightSlider.value,
+  };
+  const state$ = model(actions$).remember();
+
+  const weightVDom$ = weightSlider.DOM;
+  const heightVDom$ = heightSlider.DOM;
+  const vdom$ = xs.combine(state$, weightVDom$, heightVDom$)
+    .map(([{ bmi }, weightVDom, heightVDom]) =>
+      <div>
+        {weightVDom}
+        {heightVDom}
+        <h2>BMI is {bmi}</h2>
+      </div>,
+    );
+
+  return {
+    DOM: vdom$,
+  };
+}
+// ===
+
+// LabeledSlider Component ====
+export function LabeledSlider(sources: ISliderSources): ISliderSinks {
+  const domSource = sources.DOM;
+  const props$ = sources.props;
+
+  const newValue$ = domSource
+    .select('.slider')
+    .events('input')
+    .map((ev) => (ev.target as HTMLInputElement).value)
+    .map((val) => parseInt(val, 10));
+
+  const state$ = props$
+    .map((props) => newValue$
+      .map((val) => ({
+        label: props.label,
+        max: props.max,
+        min: props.min,
+        unit: props.unit,
+        value: val,
+      }))
+      .startWith(props),
+    )
+    .flatten()
+    .remember();
+
+  const vdom$ = state$
+    .map((state) =>
+      <div className='labelled-slider'>
+        <span className='label'>{`${state.label} ${state.value}${state.unit}`}</span>
+        <input className='slider' type='range' min={state.min} max={state.max} value={state.value} />
+      </div>,
+    );
+
+  const sinks = {
+    DOM: vdom$,
+    value: state$.map((state) => state.value),
+  };
+
+  return sinks;
 }
 // ===
 
@@ -55,6 +131,7 @@ function calculateBMI(weight: number, height: number): number {
 // ===
 
 // View function and helpers ====
+
 function view(state$: Stream<IState>) {
   return state$.map(({weight, height, bmi}: {weight: number, height: number, bmi: number}) =>
     <div>
